@@ -5,6 +5,7 @@ module.exports = {
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
+    GatewayIntentBits.DirectMessages,
   ],
 };
 

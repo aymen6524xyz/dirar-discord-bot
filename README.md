@@ -10,6 +10,26 @@ A structured Discord bot built with Discord.js v14.
 - ✅ Organized file structure
 - ✅ Easy to extend
 
+## Available Commands
+
+| Command | Description | Permission |
+|---------|-------------|------------|
+| \`adminpm\` | Send a private message to a user | Master (5) |
+| \`clear\` | Deletes messages from the channel | Master (5) |
+| \`clearbot\` | Deletes bot messages from the channel | Master (5) |
+| \`dmallow\` | Allow a user to chat via Bot DMs | Master (5) |
+| \`dmrevoke\` | Revoke DM Chat permission from a user | Master (5) |
+| \`dmsetchannel\` | Set the channel where DMs will be forwarded | Master (5) |
+| \`flock\` | Lock a voice channel | Master (5) |
+| \`funlock\` | Unlock a voice channel | Master (5) |
+| \`help\` | List all available commands | Everyone (3) |
+| \`jv\` | Post the verification message | Master (5) |
+| \`log\` | Log a banned user | Master (5) |
+| \`logwarn\` | Log a warned member | Master (5) |
+| \`massgrant\` | Grant a role to multiple users | Master (5) |
+| \`ping\` | Replies with Pong! | Everyone (3) |
+| \`roastme\` | Test the roast system | Impossible (10) |
+
 ## Project Structure
 
 ```

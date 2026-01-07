@@ -1,8 +1,9 @@
-const { Client, Collection } = require('discord.js');
+const { Client, Collection, Partials } = require('discord.js');
 const config = require('../config/config');
 
 const client = new Client({
   intents: config.intents,
+  partials: [Partials.Channel, Partials.Message, Partials.User]
 });
 
 // Collections for commands

@@ -1,6 +1,7 @@
-const { Events } = require('discord.js');
+const { Events, MessageFlags } = require('discord.js');
 const client = require('../client/client');
 const { hasPermission } = require('../utils/permissions');
+const { getDenialMessage } = require('../utils/roasts');
 
 module.exports = {
   name: Events.InteractionCreate,
@@ -18,8 +19,8 @@ module.exports = {
       const requiredPerms = command.perms || 3;
       if (!hasPermission(interaction.user.id, requiredPerms)) {
         return interaction.reply({
-          content: '❌ You don\'t have permission to use this command!',
-          ephemeral: true,
+          content: getDenialMessage(interaction.user.id),
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -37,7 +38,7 @@ module.exports = {
         
         const errorMessage = {
           content: '❌ There was an error executing this command!',
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         };
 
         if (interaction.replied || interaction.deferred) {

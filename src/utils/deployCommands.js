@@ -7,7 +7,7 @@ const registerCommands = require('./registerCommands');
 registerCommands()
   .then(() => {
     console.log('✅ Command registration complete!');
-    process.exit(0);
+    // Allow the process to exit naturally
   })
   .catch((error) => {
     console.error('❌ Failed to register commands:', error);

@@ -2,8 +2,8 @@ const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 
 module.exports = {
   // Message command properties
-  name: 'clearbot',
-  description: 'Deletes bot messages from the channel',
+  name: 'clear',
+  description: 'Deletes messages from the channel',
   
   // Permission level required (5 = master, 8 = owner)
   perms: 5,
@@ -13,12 +13,12 @@ module.exports = {
   
   // Slash command data
   data: new SlashCommandBuilder()
-    .setName('clearbot')
-    .setDescription('Deletes bot messages from the channel')
+    .setName('clear')
+    .setDescription('Deletes messages from the channel')
     .addIntegerOption(option =>
       option
         .setName('amount')
-        .setDescription('Number of messages to scan and delete (1-100)')
+        .setDescription('Number of messages to delete (1-100)')
         .setRequired(true)
         .setMinValue(1)
         .setMaxValue(100)
@@ -26,12 +26,10 @@ module.exports = {
   
   // Message command handler
   async execute(message, args) {
-    // Check if user has permission to manage messages
     if (!message.member.permissions.has('ManageMessages')) {
       return message.reply('❌ You need the "Manage Messages" permission to use this command!');
     }
 
-    // Get the number of messages to delete
     const amount = parseInt(args[0]);
     
     if (!amount || isNaN(amount) || amount < 1 || amount > 100) {
@@ -42,28 +40,27 @@ module.exports = {
       // Fetch messages from the channel
       const messages = await message.channel.messages.fetch({ limit: amount });
       
-      // Filter for bot messages
-      const botMessages = messages.filter(msg => msg.author.bot);
-      
-      if (botMessages.size === 0) {
-        return message.reply('❌ No bot messages found in the last ' + amount + ' messages!');
+      if (messages.size === 0) {
+        return message.reply(`❌ No messages found.`);
       }
 
-      // Delete the bot messages
-      const deleted = await message.channel.bulkDelete(botMessages, true);
+      // Delete the messages
+      const deleted = await message.channel.bulkDelete(messages, true);
       
-      // Send confirmation (will be deleted after 5 seconds)
-      const reply = await message.reply(`✅ Deleted ${deleted.size} bot message(s)!`);
+      let replyContent = `✅ Deleted ${deleted.size} message(s)!`;
+      if (deleted.size === 0 && messages.size > 0) {
+        replyContent = '⚠️ Found messages, but they are **older than 14 days** and cannot be bulk deleted due to Discord API limits.';
+      }
       
-      // Delete the confirmation message after 5 seconds
+      const reply = await message.reply(replyContent);
+      
       setTimeout(() => {
         reply.delete().catch(() => {});
       }, 5000);
       
     } catch (error) {
-      console.error('Error deleting bot messages:', error);
+      console.error('Error deleting messages:', error);
       
-      // Handle specific Discord errors
       if (error.code === 50034) {
         return message.reply('❌ Cannot delete messages older than 14 days!');
       } else if (error.code === 50013) {
@@ -76,7 +73,6 @@ module.exports = {
   
   // Slash command handler
   async executeSlash(interaction) {
-    // Check if user has permission to manage messages
     if (!interaction.member.permissions.has('ManageMessages')) {
       return interaction.reply({
         content: '❌ You need the "Manage Messages" permission to use this command!',
@@ -87,32 +83,27 @@ module.exports = {
     const amount = interaction.options.getInteger('amount');
 
     try {
-      // Defer reply since this might take a moment
       await interaction.deferReply({ ephemeral: true });
 
-      // Fetch messages from the channel
       const messages = await interaction.channel.messages.fetch({ limit: amount });
       
-      // Filter for bot messages
-      const botMessages = messages.filter(msg => msg.author.bot);
-      
-      if (botMessages.size === 0) {
-        return interaction.editReply('❌ No bot messages found in the last ' + amount + ' messages!');
+      if (messages.size === 0) {
+        return interaction.editReply(`❌ No messages found.`);
       }
 
-      // Delete the bot messages
-      const deleted = await interaction.channel.bulkDelete(botMessages, true);
+      const deleted = await interaction.channel.bulkDelete(messages, true);
       
-      // Send confirmation
-      await interaction.editReply(`✅ Deleted ${deleted.size} bot message(s)!`);
+      if (deleted.size === 0 && messages.size > 0) {
+        await interaction.editReply('⚠️ Found messages, but they are **older than 14 days** and cannot be bulk deleted due to Discord API limits.');
+      } else {
+        await interaction.editReply(`✅ Deleted ${deleted.size} message(s)!`);
+      }
       
     } catch (error) {
-      console.error('Error deleting bot messages:', error);
+      console.error('Error deleting messages:', error);
       
-      // If the interaction is already acknowledged (e.g. double execution), just return
       if (error.code === 40060) return;
 
-      // Handle specific Discord errors
       if (error.code === 50034) {
         if (interaction.deferred || interaction.replied) await interaction.editReply('❌ Cannot delete messages older than 14 days!');
         return;
@@ -121,11 +112,9 @@ module.exports = {
         return;
       }
       
-      // Only try to editReply if we actually successfully deferred/replied earlier
       if (interaction.deferred || interaction.replied) {
         await interaction.editReply('❌ An error occurred while deleting messages!');
       }
     }
   },
 };
-
