@@ -14,7 +14,7 @@ module.exports = {
   },
 
   async executeSlash(interaction) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: 'Ephemeral' });
     await this.handleJv(interaction.channel);
     await interaction.editReply('✅ Verification message posted.');
   },

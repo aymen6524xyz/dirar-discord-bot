@@ -52,7 +52,7 @@ module.exports = {
     const member = interaction.options.getMember('member') || interaction.options.getUser('member');
     const reason = interaction.options.getString('reason');
 
-    await interaction.deferReply({ ephemeral: true }); 
+    await interaction.deferReply({ flags: 'Ephemeral' }); 
     
     // Normalize member object if it's a User (happens if user left guild)
     const target = member.user ? member : { user: member, id: member.id, displayName: member.username };
@@ -73,6 +73,7 @@ module.exports = {
         `📄 **Reason:** ${reason}\n` +
         `🔧 **Warned by:** ${adminUser.username} (${adminUser.id})\n` +
         `📅 **Date:** ${timestamp}\n` +
+        `📂 **Proofs (if any) should be found below**\n` +
         `━━━━━━━━━━━━━━━━━━`
       )
       .setColor(0xFFA500); // Orange color

@@ -25,10 +25,12 @@ A structured Discord bot built with Discord.js v14.
 | \`help\` | List all available commands | Everyone (3) |
 | \`jv\` | Post the verification message | Master (5) |
 | \`log\` | Log a banned user | Master (5) |
+| \`logmassban\` | Log multiple banned users | Master (5) |
 | \`logwarn\` | Log a warned member | Master (5) |
 | \`massgrant\` | Grant a role to multiple users | Master (5) |
 | \`ping\` | Replies with Pong! | Everyone (3) |
 | \`roastme\` | Test the roast system | Impossible (10) |
+| \`tictactoe\` | Play a game of Tic-Tac-Toe | Everyone (3) |
 
 ## Project Structure
 

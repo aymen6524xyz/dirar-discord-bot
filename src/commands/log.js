@@ -37,7 +37,7 @@ module.exports = {
     const memberId = interaction.options.getString('member_id');
     const reason = interaction.options.getString('reason');
 
-    await interaction.deferReply({ ephemeral: true }); // Confirmation message is hidden
+    await interaction.deferReply({ flags: 'Ephemeral' }); // Confirmation message is hidden
     await this.handleLog(interaction, memberId, reason, interaction.user, true);
   },
 

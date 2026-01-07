@@ -11,6 +11,52 @@ module.exports = {
     // Ignore messages from bots
     if (message.author.bot) return;
 
+    // --- Message Reaction Event ---
+    const TARGET_IDS = ['696331073562607676', '541763571357319168'];
+    const CUSTOM_REACTIONS = [
+      
+        
+    
+    ];
+
+    const hasMention = message.mentions.users.some(user => TARGET_IDS.includes(user.id)) || 
+                       message.mentions.roles.some(role => TARGET_IDS.includes(role.id)) ||
+                       (message.reference && (await message.fetchReference().catch(() => null))?.author && TARGET_IDS.includes((await message.fetchReference()).author.id)); // Basic reply check
+
+    // Check if the message mentions the target users directly
+    // Also checking if the AUTHOR is one of the target IDs (responding to them) or if they are mentioned
+    const mentionsTarget = message.mentions.users.some(u => TARGET_IDS.includes(u.id));
+    
+    // Also check if the content contains the ID directly (for role pings or plain text IDs)
+    const contentHasId = TARGET_IDS.some(id => message.content.includes(id));
+
+    if (mentionsTarget || contentHasId) {
+        // React with random reactions from the list
+        // Since these look like custom emoji IDs, we need to find them or just try to react
+        // Note: Custom emojis need to be known by the bot (in its cache)
+        
+        // Pick one random reaction or all? "add an event to auto react"
+        // I will pick 2 random ones to be fun but not spammy, or just iterate.
+        // Let's try to react with up to 3 random ones.
+        const shuffled = CUSTOM_REACTIONS.sort(() => 0.5 - Math.random());
+        const selected = shuffled.slice(0, 3);
+
+        for (const emojiId of selected) {
+             try {
+                 // Try to find the emoji in the cache first to ensure it's valid
+                 const emoji = message.client.emojis.cache.get(emojiId);
+                 if (emoji) {
+                     await message.react(emoji);
+                 } else {
+                     // If not found in cache, try reacting with the ID directly (sometimes works if bot is in the Guild)
+                     await message.react(emojiId).catch(e => console.error(`Failed to react with ${emojiId}:`, e.message));
+                 }
+             } catch (e) {
+                 console.error(`Error reacting with ${emojiId}:`, e);
+             }
+        }
+    }
+
     // Handle DM Chat Forwarding
     if (message.channel.type === ChannelType.DM) {
       // Check if user is allowed to chat via DM
