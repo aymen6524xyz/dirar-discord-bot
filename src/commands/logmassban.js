@@ -48,12 +48,6 @@ module.exports = {
     // Assuming there's a log channel, let's try to find it. 
     // In log.js (not shown fully) it likely sends to a specific channel. 
     // Since I don't have the log channel ID in context, I will search for a channel named 'logs' or 'mod-logs'
-    const logChannel = message.guild.channels.cache.find(c => c.name.includes('log') && c.isTextBased());
-
-    if (!logChannel) {
-        return message.channel.send('⚠️ Could not find a log channel (e.g., #logs, #mod-logs).');
-    }
-
     let count = 0;
     const timestamp = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
     
@@ -68,16 +62,16 @@ module.exports = {
         }
 
         const embed = new EmbedBuilder()
-          .setTitle('🔨 Ban Log')
+          .setTitle('🔨 Log')
           .setColor('#FF0000') // Red
           .addFields(
             { name: 'Moderator', value: `${message.author.tag} (${message.author.id})`, inline: true },
             { name: 'Reason', value: reason, inline: true },
-            { name: 'Banned User', value: `${userTag} (\`${id}\`)` },
+            { name: 'User', value: `${userTag} (\`${id}\`)` },
             { name: '\u200B', value: `📅 **Date:** ${timestamp}\n📂 **Proofs (if any) should be found below**` }
           );
 
-        await logChannel.send({ embeds: [embed] });
+        await message.channel.send({ embeds: [embed] });
         count++;
     }
 
@@ -96,12 +90,6 @@ module.exports = {
         return interaction.reply({ content: '❌ No valid user IDs provided.', flags: 'Ephemeral' });
     }
 
-    const logChannel = interaction.guild.channels.cache.find(c => c.name.includes('log') && c.isTextBased());
-
-    if (!logChannel) {
-        return interaction.reply({ content: '⚠️ Could not find a log channel (e.g., #logs, #mod-logs).', flags: 'Ephemeral' });
-    }
-
     await interaction.reply({ content: `Logging ${userIds.length} bans...`, flags: 'Ephemeral' });
 
     let count = 0;
@@ -118,16 +106,16 @@ module.exports = {
         }
 
         const embed = new EmbedBuilder()
-          .setTitle('🔨 Ban Log')
+          .setTitle('🔨 Log')
           .setColor('#FF0000')
           .addFields(
             { name: 'Moderator', value: `${interaction.user.tag} (${interaction.user.id})`, inline: true },
             { name: 'Reason', value: reason, inline: true },
-            { name: 'Banned User', value: `${userTag} (\`${id}\`)` },
+            { name: 'User', value: `${userTag} (\`${id}\`)` },
             { name: '\u200B', value: `📅 **Date:** ${timestamp}\n📂 **Proofs (if any) should be found below**` }
           );
 
-        await logChannel.send({ embeds: [embed] });
+        await interaction.channel.send({ embeds: [embed] });
         count++;
     }
 

@@ -14,9 +14,11 @@ module.exports = {
     // --- Message Reaction Event ---
     const TARGET_IDS = ['696331073562607676', '541763571357319168'];
     const CUSTOM_REACTIONS = [
-      
-        
-    
+        '1365391998999330836',
+        '822803220975976449',
+        '1125775607549149265',
+        '1295868441609244732',
+        '1165744293802156133'
     ];
 
     const hasMention = message.mentions.users.some(user => TARGET_IDS.includes(user.id)) || 

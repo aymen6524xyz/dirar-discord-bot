@@ -31,7 +31,7 @@ function isVip(userId) {
 function isAllowed(userId) {
   const config = loadConfig();
   // removed isVip check so admins can test revocation on themselves
-  // if (isVip(userId)) return true; 
+  if (isVip(userId)) return true; 
 
   const userObj = config.allowedUsers.find(u => u.id === userId);
   if (!userObj) return false;
