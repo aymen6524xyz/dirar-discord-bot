@@ -12,7 +12,7 @@ module.exports = {
     if (message.author.bot) return;
 
     // --- Message Reaction Event ---
-    const TARGET_IDS = ['696331073562607676', '541763571357319168'];
+    const TARGET_IDS = ['696331073562607676', '541763571357319168', '1082257882935984128'];
     const CUSTOM_REACTIONS = [
         '1365391998999330836',
         '822803220975976449',
@@ -21,18 +21,11 @@ module.exports = {
         '1165744293802156133'
     ];
 
-    const hasMention = message.mentions.users.some(user => TARGET_IDS.includes(user.id)) || 
-                       message.mentions.roles.some(role => TARGET_IDS.includes(role.id)) ||
-                       (message.reference && (await message.fetchReference().catch(() => null))?.author && TARGET_IDS.includes((await message.fetchReference()).author.id)); // Basic reply check
-
-    // Check if the message mentions the target users directly
-    // Also checking if the AUTHOR is one of the target IDs (responding to them) or if they are mentioned
-    const mentionsTarget = message.mentions.users.some(u => TARGET_IDS.includes(u.id));
-    
-    // Also check if the content contains the ID directly (for role pings or plain text IDs)
+    // Check if the content contains the ID directly (for role pings or plain text IDs)
+    // This ensures we only react when explicitly tagged in content, not just replied to
     const contentHasId = TARGET_IDS.some(id => message.content.includes(id));
 
-    if (mentionsTarget || contentHasId) {
+    if (contentHasId) {
         // React with random reactions from the list
         // Since these look like custom emoji IDs, we need to find them or just try to react
         // Note: Custom emojis need to be known by the bot (in its cache)
@@ -81,7 +74,7 @@ module.exports = {
                 const files = message.attachments.map(a => a.url);
                 if (message.content.length === 0 && files.length === 0) return; // Ignore empty messages (stickers etc) without content
                 await targetChannel.send({
-                    content: message.content,
+                    content: `**${message.content}**`,
                     files: files
                 });
                 await message.react('✅'); // Confirm sent

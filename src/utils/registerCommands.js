@@ -46,14 +46,32 @@ module.exports = async () => {
   const rest = new REST().setToken(config.token);
 
   try {
-    // Get client ID - use from config or fetch from API
+    // Get client ID - always fetch from token to ensure it matches
+    // This prevents "You are not authorized to perform this action" errors (Code 20012)
     let clientId = config.clientId;
     
+    try {
+        console.log('🔍 Verifying token and fetching Application ID...');
+        const currentAppId = await getApplicationId(rest);
+        
+        if (clientId && clientId !== currentAppId) {
+            console.warn(`⚠️  WARNING: CLIENT_ID in .env (${clientId}) does not match the token's app ID (${currentAppId}).`);
+            console.warn(`👉 Using the ID from the token (${currentAppId}) to prevent errors.`);
+            clientId = currentAppId;
+        } else if (!clientId) {
+            console.log(`✅ Found Application ID: ${currentAppId}`);
+            clientId = currentAppId;
+        } else {
+             console.log(`✅ Token matches Client ID: ${clientId}`);
+        }
+    } catch (err) {
+        console.warn('⚠️  Could not automatically verify application ID. Using .env value if available.');
+        // If fetch fails, we proceed with config.clientId (which might fail later if wrong)
+    }
+
     if (!clientId) {
-      console.log('ℹ️  CLIENT_ID not set, fetching from Discord API...');
-      clientId = await getApplicationId(rest);
-      console.log(`✅ Found Application ID: ${clientId}`);
-      console.log(`💡 Tip: Add CLIENT_ID=${clientId} to your .env file to skip this step next time.`);
+      console.log('ℹ️  CLIENT_ID not set and could not be fetched. Please check your token.');
+      return; 
     }
 
     // Filter commands by enabled property and remove enabled from JSON (Discord doesn't accept it)

@@ -34,7 +34,7 @@ const compliments = [
   "🙇 **We are not worthy!** Semhili ya sid rjal, ma qditch nexecuti l'ordre."
 ];
 
-const vipIds = ['696331073562607676', '541763571357319168'];
+const vipIds = ['696331073562607676', '541763571357319168', '1082257882935984128'];
 
 function getDenialMessage(userId) {
   if (vipIds.includes(userId)) {

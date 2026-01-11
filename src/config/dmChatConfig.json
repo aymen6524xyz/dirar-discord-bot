@@ -1,8 +1,12 @@
 {
-  "targetChannelId": "1264789492338917376",
+  "targetChannelId": "840535839138119680",
   "allowedUsers": [
     {
       "id": "541763571357319168",
+      "expires": null
+    },
+    {
+      "id": "1082257882935984128",
       "expires": null
     }
   ]
