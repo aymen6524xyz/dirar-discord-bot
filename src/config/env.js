@@ -5,7 +5,9 @@ module.exports = {
   prefix: process.env.PREFIX || '!',
   clientId: process.env.CLIENT_ID,
   guildId: process.env.GUILD_ID,
-  ownerId: process.env.OWNER_ID, // CHRIS's user ID
+  ownerIds: process.env.OWNER_ID ? process.env.OWNER_ID.split(',') : [], // CHRIS's user ID (now supports multiple as CSV)
   masterIds: process.env.MASTER_IDS ? process.env.MASTER_IDS.split(',') : [], // Array of master user IDs
+  geminiKey: process.env.GEMINI_API_KEY,
+  openRouterKey: process.env.OPENROUTER_API_KEY,
 };
 

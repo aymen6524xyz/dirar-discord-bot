@@ -1,4 +1,5 @@
 const config = require('../config/env');
+const { isMaster } = require('./masterManager');
 
 /**
  * Get user permission level
@@ -6,13 +7,13 @@ const config = require('../config/env');
  * @returns {number} Permission level (3, 5, or 8)
  */
 function getUserPerms(userId) {
-  // CHRIS gets full access (perms 8)
-  if (userId === config.ownerId) {
+  // Owners get full access (perms 8)
+  if (config.ownerIds && config.ownerIds.includes(userId)) {
     return 8;
   }
   
   // Check if user is a master
-  if (config.masterIds && config.masterIds.includes(userId)) {
+  if (isMaster(userId)) {
     return 5;
   }
   

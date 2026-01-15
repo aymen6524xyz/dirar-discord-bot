@@ -2,10 +2,19 @@ const { Events, MessageFlags } = require('discord.js');
 const client = require('../client/client');
 const { hasPermission } = require('../utils/permissions');
 const { getDenialMessage } = require('../utils/roasts');
+const { isBlacklisted } = require('../utils/blacklistManager');
 
 module.exports = {
   name: Events.InteractionCreate,
   async execute(interaction) {
+    // Check Blacklist for all interactions
+    if (isBlacklisted(interaction.user.id)) {
+        if (interaction.isRepliable()) {
+            await interaction.reply({ content: '🚫 You are blacklisted from using this bot.', flags: MessageFlags.Ephemeral });
+        }
+        return;
+    }
+
     // Handle slash commands
     if (interaction.isChatInputCommand()) {
       const command = client.slashCommands.get(interaction.commandName);

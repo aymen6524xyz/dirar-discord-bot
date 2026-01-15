@@ -1,52 +1,115 @@
-const roasts = [
-  "🛑 **Stop!** Wash rak diri hna? Had l'commande kbira 3lik ya l'3awd. Lazemlek **Niveau 5** bach tsta3melha. Roh tl3ab b3id! 😂",
-  "🐸 **Rak tiri bark!** Wesh hsabtek Admin? Riyeh larde khoya, hadchi machi lik.",
-  "⛔ **Access Denied!** Rak jayez bla visa? Hada territoire ta3 les Masters bark.",
-  "🚧 **Ahbsss!** Win 3labalik rayeh? Hada niveau 5, wnta rak tbanli niveau sous-sol.",
-  "🍼 **Mazalek sghir** 3la had l'commande. Kber chwya w rwa7, hada chghol kbar.",
-  "🔒 **Makach Dakhla!** Ya kho, mata forcech. Ma 3andekch les clés ta3 dar.",
-  "🤡 **Rak tmencher?** Hada command ta3 rjal, riyeh 3aghel khir lek.",
-  "🕵️ **Security Alert!** Chkoun ntaya? Ma3refnekch. Ma3andekch droit d'accès hna.",
-  "📉 **Error 403:** Permission introuvable... kima niveau dialek fl bot.",
-  "💨 **Ouste!** Roh chouf kach haja wahdokhra dirha, hadchi wa3er 3lik bezaf.",
-  "🤐 **S-s-s-stop!** Yadek rahi taklek? Hada bouton nucleaire, machi jouet.",
-  "🧠 **System Overload:** Le cerveau ta3ek sghir machi capable ycomprendi had l'commande.",
-  "🚫 **Machi lik!** Had l'korsi ta3 moulah, w nta machi moulah. Nodh tga3ad.",
-  "🔨 **Banhammer Loading...** Ghir nel3ab, mais serio ma tzidch t3awadha la nfachlouk.",
-  "👀 **Rak tban lost.** Wash jabek l hna? Hada coin ta3 les VIP, machi ta3 touriste.",
-  "🔥 **Skhoun 3lik!** Ya weldi hada nar, w nta rak chema3. Ahreb!",
-  "🐢 **Rak tharrech.** Rak b3id bezaf 3la niveau li nhebbuh. Zid 3oum.",
-  "🛑 **Stopina!** Salou 3la nbi, had l'commande makach menha lik. Roh taqra.",
-  "🤏 **Rak hna...** w niveau 5 rah lhih. Ma yetlakawkch ga3.",
-  "🤖 **Beep Boop.** Permission not found. Roh tebki 3and Admin y3tik grade."
-];
+const fs = require('fs');
+const path = require('path');
+
+// Load roasts from JSON file
+const roastsPath = path.join(__dirname, '../data/roasts.json');
+const roastComponentsPath = path.join(__dirname, '../data/roast_components.json');
+let roasts = [];
+let roastComponents = null;
+
+try {
+    if (fs.existsSync(roastComponentsPath)) {
+        roastComponents = JSON.parse(fs.readFileSync(roastComponentsPath, 'utf8'));
+    }
+} catch (error) {
+    console.error("Failed to load roast_components.json:", error);
+}
+
+try {
+    if (fs.existsSync(roastsPath)) {
+        roasts = JSON.parse(fs.readFileSync(roastsPath, 'utf8'));
+    } else {
+        // Fallback default roasts in case file is missing
+        roasts = ["🛑 **Stop!** Error loading roasts. Use commands properly."];
+        // Create the file with default if missing? Or just log error.
+        // For now, let's keep it simple.
+    }
+} catch (error) {
+    console.error("Failed to load roasts.json:", error);
+    roasts = ["🛑 **Error** loading roasts system."];
+}
+
+// Function to reload roasts (useful if we add a command to update them later)
+function reloadRoasts() {
+    try {
+        if (fs.existsSync(roastsPath)) {
+            const data = fs.readFileSync(roastsPath, 'utf8');
+            roasts = JSON.parse(data);
+        }
+        if (fs.existsSync(roastComponentsPath)) {
+            roastComponents = JSON.parse(fs.readFileSync(roastComponentsPath, 'utf8'));
+        }
+        return true;
+    } catch (e) {
+        console.error(e);
+    }
+    return false;
+}
+
+function generateRoast() {
+    if (!roastComponents || !roastComponents.templates || !roastComponents.adjectives || !roastComponents.nouns) {
+        return "You are so uninspiring, I can't even generate a roast for you.";
+    }
+    
+    const template = roastComponents.templates[Math.floor(Math.random() * roastComponents.templates.length)];
+    const adjective = roastComponents.adjectives[Math.floor(Math.random() * roastComponents.adjectives.length)];
+    const noun = roastComponents.nouns[Math.floor(Math.random() * roastComponents.nouns.length)];
+    
+    return template.replace('{adjective}', adjective).replace('{noun}', noun);
+}
 
 const compliments = [
-  "👑 **Sidna!** Samhili ya Sultan, had l'commande rahi fatat niveau ta3ek. Nta foug ga3 hadchi.",
-  "🦁 **Ya L'Lion!** Ma 3andekch l'permission, mais 3andek qalbna. Nta moul dar.",
-  "✨ **Your Majesty!** Technicality sghira baratlek triq, mais nta dima King.",
-  "💎 **Diamant Pure!** L'code bghra yhabsek, mais l'hiba ta3ek tpassi partout.",
-  "⚔️ **General!** Had l'outils machi digne lik. Nta commandi w hna nnafdou.",
-  "🎩 **Monsieur le Président!** L'system rah dayer erreur, nta normaal tnod tdir wach t'hab.",
-  "🚀 **Nadi!** Nta niveau ta3ek harreb bezaf, had l'commande sghira 3lik.",
-  "🌟 **Shining Star!** Sorry Boss, l'bot rah ykhallat. Nta tstahal koulch.",
-  "🌹 **Ya Zine!** Ma tqaLaqch rouhek, hadchi ghir code. Nta l'asl.",
-  "🙇 **We are not worthy!** Semhili ya sid rjal, ma qditch nexecuti l'ordre."
+  "👑 **Your Majesty!** Forgive me, but this command is beneath your stature.",
+  "🦁 **The Lion!** You don't need permission; you own this place.",
+  "✨ **Your Excellence!** A small technicality blocks the path, but you remain the King.",
+  "💎 **Pure Diamond!** The code tries to stop you, but your brilliance shines through.",
+  "⚔️ **General!** This tool is not worthy of you. You command, and we obey.",
+  "🎩 **Mr. President!** The system is in error; you should naturally do as you please.",
+  "🚀 **Supreme!** Your level is far too high; this command is too small for you.",
+  "🌟 **Shining Star!** Sorry Boss, the bot is confused. You deserve everything.",
+  "🌹 **Your Grace!** Do not trouble yourself; this is merely code. You are the origin.",
+  "🙇 **We are not worthy!** Forgive me, my liege, I cannot execute the order on such greatness."
 ];
 
 const vipIds = ['696331073562607676', '541763571357319168', '1082257882935984128'];
+const recentRoasts = new Set();
+const HISTORY_SIZE = 50;
 
 function getDenialMessage(userId) {
   if (vipIds.includes(userId)) {
     const randomIndex = Math.floor(Math.random() * compliments.length);
     return compliments[randomIndex];
   }
-  const randomIndex = Math.floor(Math.random() * roasts.length);
-  return roasts[randomIndex];
+  
+  let attempts = 0;
+  let message = "";
+  
+  // Try to generate a unique roast
+  do {
+      attempts++;
+      // 80% chance to use a generated roast vs a static one for higher variety
+      if (roastComponents && Math.random() > 0.2) {
+          message = generateRoast();
+      } else {
+          const randomIndex = Math.floor(Math.random() * roasts.length);
+          message = roasts[randomIndex];
+      }
+  } while (recentRoasts.has(message) && attempts < 10);
+
+  // Update history
+  recentRoasts.add(message);
+  if (recentRoasts.size > HISTORY_SIZE) {
+      const iterator = recentRoasts.values();
+      recentRoasts.delete(iterator.next().value);
+  }
+
+  return message;
 }
 
 module.exports = {
   getDenialMessage,
-  roasts,
-  compliments
+  get roasts() { return roasts }, // Getter to ensure we always get current list if using require ref
+  compliments,
+  reloadRoasts,
+  generateRoast
 };

@@ -7,33 +7,62 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('adminpm')
     .setDescription('Send a private message to a user')
-    .addStringOption(option => 
-      option.setName('user_id')
-        .setDescription('The ID of the user')
+    .addUserOption(option => 
+      option.setName('user')
+        .setDescription('The user to DM')
         .setRequired(true))
     .addStringOption(option => 
       option.setName('message')
         .setDescription('The message to send')
-        .setRequired(true)),
+        .setRequired(false))
+    .addAttachmentOption(option =>
+      option.setName('attachment')
+        .setDescription('Attach an image or file')
+        .setRequired(false)),
 
   async execute(message, args) {
-    if (args.length < 2) return message.reply('❗ Usage: `d?adminpm <user_id> <message>`');
+    if (args.length < 1 && message.attachments.size === 0 && message.stickers.size === 0) {
+        return message.reply('❗ Usage: `d?adminpm <@user/id> [message]` (you can also attach files/stickers)');
+    }
     
-    const userId = args[0];
-    const userMsg = args.slice(1).join(' ');
+    // Handle Mentions or IDs
+    let userId = args[0];
+    if (message.mentions.users.size > 0) {
+        userId = message.mentions.users.first().id;
+        // If the first arg was the mention, remove it from content args if needed
+        // But usually current args parser might split it. 
+        // We'll assume args[0] is the user ref.
+    } else if (userId) {
+        // Clean ID just in case
+        userId = userId.replace(/[<@!>]/g, '');
+    }
 
-    await this.handleAdminPm(message, userId, userMsg);
+    // Capture message content (everything after the first arg if it was a user ref)
+    // If just attachment sent, args might be empty or valid 
+    let userMsg = args.length > 1 ? args.slice(1).join(' ') : (args.length === 1 && args[0].includes(userId) ? '' : args.join(' ')); 
+
+    // If the first arg was considered the ID, the msg is the rest.
+    // However, if the user does `d?adminpm text`, we have a problem: we need a target.
+    // The command requires a target.
+    
+    // Safety check for ID
+    if (!userId || !/^\d+$/.test(userId)) {
+        return message.reply('❗ Please provide a valid User ID or Mention.');
+    }
+
+    await this.handleAdminPm(message, userId, userMsg, false);
   },
 
   async executeSlash(interaction) {
-    const userId = interaction.options.getString('user_id');
-    const userMsg = interaction.options.getString('message');
+    const user = interaction.options.getUser('user');
+    const userMsg = interaction.options.getString('message') || '';
+    const attachment = interaction.options.getAttachment('attachment');
 
-    await interaction.deferReply();
-    await this.handleAdminPm(interaction, userId, userMsg, true);
+    await interaction.deferReply({ ephemeral: true });
+    await this.handleAdminPm(interaction, user.id, userMsg, true, attachment);
   },
 
-  async handleAdminPm(ctx, userId, userMsg, isSlash = false) {
+  async handleAdminPm(ctx, userId, userMsg, isSlash = false, attachment = null) {
     const client = ctx.client;
     
     try {
@@ -44,11 +73,48 @@ module.exports = {
         return isSlash ? ctx.editReply(msg) : ctx.reply(msg);
       }
 
-      // Send DM
-      const dmMessage = `This is a **AGR-ADMIN-PM** : **${userMsg}**`;
-      await user.send(dmMessage);
+      const payload = { content: userMsg || undefined }; 
+      const files = [];
 
-      const successMsg = `✅ Message successfully sent to **${user.tag}**.`;
+      // Handle Slash Attachment
+      if (attachment) {
+          files.push(attachment);
+      }
+
+      // Handle Message Context Attachments (Text Command)
+      if (!isSlash && ctx.attachments && ctx.attachments.size > 0) {
+          ctx.attachments.forEach(att => files.push(att));
+      }
+
+       // Handle Message Stickers (Text Command) - Best effort (send URL)
+      if (!isSlash && ctx.stickers && ctx.stickers.size > 0) {
+         ctx.stickers.forEach(sticker => {
+             // Append sticker URL to content or as file if possibly
+             if (!payload.content) payload.content = '';
+             payload.content += `\n${sticker.url}`;
+         });
+      }
+
+      if (files.length > 0) {
+          payload.files = files;
+      }
+
+      if (!payload.content && (!payload.files || payload.files.length === 0)) {
+           const msg = `❌ Cannot send an empty message.`;
+           return isSlash ? ctx.editReply(msg) : ctx.reply(msg);
+      }
+
+      // Add a header to indicate it's from Admin
+      if (payload.content) {
+          payload.content = `**[Admin Message]**\n${payload.content}`;
+      } else {
+         payload.content = `**[Admin Message]** (See attachment)`;
+      }
+
+      // Send DM
+      await user.send(payload);
+
+      const successMsg = `✅ Message sent to **${user.tag}**.`;
       return isSlash ? ctx.editReply(successMsg) : ctx.reply(successMsg);
 
     } catch (error) {
