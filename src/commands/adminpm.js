@@ -104,12 +104,8 @@ module.exports = {
            return isSlash ? ctx.editReply(msg) : ctx.reply(msg);
       }
 
-      // Add a header to indicate it's from Admin
-      if (payload.content) {
-          payload.content = `**[Admin Message]**\n${payload.content}`;
-      } else {
-         payload.content = `**[Admin Message]** (See attachment)`;
-      }
+      // Sending raw message so it looks like it comes from the bot directly
+      // (Header removed to maintain anonymity)
 
       // Send DM
       await user.send(payload);
