@@ -81,20 +81,17 @@ module.exports = {
                 let contentToSend = message.content || '';
 
                 if (stickers.length > 0) {
-                     contentToSend += `\n${stickers.join('\n')}`;
+                     if (contentToSend.length > 0) contentToSend += '\n';
+                     contentToSend += stickers.join('\n');
                 }
 
                 if (contentToSend.length === 0 && files.length === 0) return; 
 
                 // Encode User ID invisibly
                 const hiddenId = encodeUserInfo(message.author.id);
-                // Append to content (it won't be visible)
-                // We append it at the end. Note: if content is empty (just file), we need to send content solely for the ID?
-                // Yes, otherwise we lose the ID if attachments are re-uploaded.
-                // However, D.js allows sending content with files.
-                // Note: contentToSend might be empty if just attachment.
                 
-                const finalContent = (contentToSend || '') + hiddenId;
+                // Append to content with a separator (newline) to avoid breaking links
+                const finalContent = (contentToSend ? contentToSend + '\n' : '') + hiddenId;
 
                 // Send as a plain message
                 const sentMsg = await targetChannel.send({ content: finalContent, files: files });

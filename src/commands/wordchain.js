@@ -266,14 +266,30 @@ module.exports = {
   async checkDictionary(word) {
     if (!validWords) loadDictionary();
     
-    // If dictionary failed to load or is empty, fallback to basic API or just allow
+    const w = word.toLowerCase();
+
+    // 1. Check Local Dictionary (Fast)
+    if (validWords && validWords.has(w)) return true;
+
+    // 2. Check Online API (Expanded Corpus)
+    // allowing "more more more more words" that aren't in the local file
+    try {
+        // Use global fetch (Node 18+)
+        const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${w}`);
+        if (res.ok) {
+            // Cache valid word to avoid future API calls
+            if (validWords) validWords.add(w);
+            return true;
+        }
+    } catch (e) {
+        // Ignore API errors, fallback to false
+    }
+
+    // If local dictionary is completely missing, default to true (allow all) to prevent softlock
     if (!validWords || validWords.size === 0) {
-        // Fallback to fetch if local missing? Or just allow everything to avoid breaking game.
-        // Let's try one fetch just in case, or just return true.
-        // Returning true is safer for "game must go on"
         return true;
     }
     
-    return validWords.has(word.toLowerCase());
+    return false;
   }
 };
