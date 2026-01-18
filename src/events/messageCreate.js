@@ -119,57 +119,7 @@ module.exports = {
       }
     }
 
-    // --- Admin Reply Handler (ModMail style) ---
-    // Allows admins to reply to forwarded DMs by replying to the bot's message in the target channel
-    const targetChannelId = getTargetChannelId();
-    if (message.channel.id === targetChannelId && message.reference && !message.author.bot) {
-        try {
-            const referencedMsg = await message.channel.messages.fetch(message.reference.messageId);
-            
-            // Check if we have a link for this message
-            const originalUserId = getOriginalUser(referencedMsg.id);
-            if (originalUserId) {
-                const originalUser = await client.users.fetch(originalUserId).catch(() => null);
 
-                if (originalUser) {
-                    const files = message.attachments.map(a => a); 
-                    const stickers = message.stickers.map(s => s.url);
-                    
-                    let contentToSend = message.content;
-                    if (stickers.length > 0) {
-                        contentToSend += `\n${stickers.join('\n')}`;
-                    }
-
-                    const payload = { 
-                        content: contentToSend,
-                        files: files
-                    };
-
-                    await originalUser.send(payload);
-                    await message.react('📨'); // Confirm reply sent
-                    return; // Stop processing command parsing for replies
-                }
-            }
-
-            // Fallback for old style (with Embeds) - Optional, but keeping it won't hurt if old msgs exist
-            if (referencedMsg.author.id === client.user.id && referencedMsg.embeds.length > 0) {
-                const footerText = referencedMsg.embeds[0].footer?.text;
-                if (footerText && footerText.startsWith('User ID: ')) {
-                    const originalUserId = footerText.split('User ID: ')[1];
-                    const originalUser = await client.users.fetch(originalUserId).catch(() => null);
-
-                    if (originalUser) {
-                        // ... logic is same, but let's just rely on the new system primarily or duplicate briefly
-                        // Actually, I'll remove the legacy block to keep code clean as requested.
-                        // The user wants clean code.
-                    }
-                }
-            }
-        } catch (err) {
-            console.error("Error handling admin reply:", err);
-            await message.react('❌');
-        }
-    }
 
     // Check if message starts with prefix
     if (!message.content.startsWith(config.prefix)) return;

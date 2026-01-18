@@ -71,11 +71,27 @@ const compliments = [
   "🙇 **We are not worthy!** Forgive me, my liege, I cannot execute the order on such greatness."
 ];
 
+const femaleCompliments = [
+  "👑 **Your Highness!** You are radiant today, no roasts for you.",
+  "👸 **Queen!** You rule over us all with such grace.",
+  "💎 **Precious Gem!** You shine brighter than any code could possibly handle.",
+  "🌟 **Superstar!** The bot bows to your elegance.",
+  "🌹 **Lovely Rose!** No roast could ever touch you.",
+  "💖 **Madame!** We are at your command, always.",
+  "🦋 **Beautiful Soul!** You are too perfect for my silly roasts."
+];
+
 const vipIds = ['696331073562607676', '541763571357319168', '1082257882935984128'];
+const specialLadies = ['1385028340573929472'];
 const recentRoasts = new Set();
 const HISTORY_SIZE = 50;
 
 function getDenialMessage(userId) {
+  if (specialLadies.includes(userId)) {
+    const randomIndex = Math.floor(Math.random() * femaleCompliments.length);
+    return femaleCompliments[randomIndex];
+  }
+
   if (vipIds.includes(userId)) {
     const randomIndex = Math.floor(Math.random() * compliments.length);
     return compliments[randomIndex];
