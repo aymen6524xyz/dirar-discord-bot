@@ -6,7 +6,7 @@ const { decodeUserInfo } = require('../utils/idEncoder');
 module.exports = {
     name: 'reply',
     description: 'Reply to a forwarded DM. Use "last" to reply to the most recent DM.',
-    perms: 5, // Master only
+    perms: 8, // Master only
     data: new SlashCommandBuilder()
         .setName('reply')
         .setDescription('Reply to a forwarded DM')

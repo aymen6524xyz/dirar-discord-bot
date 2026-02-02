@@ -1,22 +1,29 @@
-const fs = require('fs');
-const path = require('path');
-const client = require('../client/client');
+const fs = require("fs");
+const path = require("path");
+const client = require("../client/client");
 
 module.exports = () => {
-  const eventsPath = path.join(__dirname, '../events');
-  const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
+  const eventsPath = path.join(__dirname, "../events");
+  if (fs.existsSync(eventsPath)) {
+    const eventFiles = fs
+      .readdirSync(eventsPath)
+      .filter((file) => file.endsWith(".js"));
 
-  for (const file of eventFiles) {
-    const filePath = path.join(eventsPath, file);
-    const event = require(filePath);
-
-    if (event.once) {
-      client.once(event.name, (...args) => event.execute(...args));
-    } else {
-      client.on(event.name, (...args) => event.execute(...args));
+    for (const file of eventFiles) {
+      const filePath = path.join(eventsPath, file);
+      loadEvent(filePath);
     }
-
-    console.log(`✅ Loaded event: ${event.name}`);
   }
 };
 
+function loadEvent(filePath) {
+  const event = require(filePath);
+
+  if (event.once) {
+    client.once(event.name, (...args) => event.execute(...args));
+  } else {
+    client.on(event.name, (...args) => event.execute(...args));
+  }
+
+  console.log(`✅ Loaded event: ${event.name} from ${path.basename(filePath)}`);
+}

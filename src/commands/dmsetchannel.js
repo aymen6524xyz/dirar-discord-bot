@@ -4,7 +4,7 @@ const { setTargetChannel, isVip } = require('../utils/dmChatManager');
 module.exports = {
   name: 'dmsetchannel',
   description: 'Set the channel where DMs will be forwarded',
-  perms: 5,
+  perms: 8,
   data: new SlashCommandBuilder()
     .setName('dmsetchannel')
     .setDescription('Set the channel where DMs will be forwarded')
