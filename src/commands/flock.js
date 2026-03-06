@@ -2,7 +2,7 @@ const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
   name: 'flock',
-  description: 'Lock a voice channel (Restrict @everyone, Allow Monarchs)',
+  description: 'Lock a voice channel (Restrict everyone, Allow Monarchs)',
   perms: 5,
   data: new SlashCommandBuilder()
     .setName('flock')
@@ -86,7 +86,7 @@ module.exports = {
        await channel.permissionOverwrites.edit(ctx.guild.id, { Connect: false }); // Deny @everyone
        await channel.permissionOverwrites.edit(monarchsRole.id, { Connect: true }); // Allow Monarchs
 
-       const msg = `🔒 **Locked** <#${channel.id}> for @everyone, allowed for **${monarchsRole.name}**.`;
+       const msg = `🔒 **Locked** <#${channel.id}> for everyone, allowed for **Monarchs**.`;
        return isSlash ? ctx.editReply(msg) : ctx.reply(msg);
 
      } catch (error) {
