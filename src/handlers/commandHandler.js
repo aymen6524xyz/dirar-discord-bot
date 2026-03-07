@@ -45,14 +45,14 @@ module.exports = () => {
         "description" in command
       ) {
         client.commands.set(command.name, command);
-        console.log(`✅ Loaded message command: ${command.name}`);
+        // console.log(`✅ Loaded message command: ${command.name}`);
       }
 
       // Load slash commands (if they have a 'data' property)
       if ("data" in command && "execute" in command) {
         // If executeSlash is present, use it for slash interactions, otherwise execute is used (handled in interactionCreate)
         client.slashCommands.set(command.data.name, command);
-        console.log(`✅ Loaded slash command: ${command.data.name}`);
+        // console.log(`✅ Loaded slash command: ${command.data.name}`);
       }
 
       // Warn if command file doesn't have proper structure

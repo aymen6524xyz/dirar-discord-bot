@@ -66,9 +66,9 @@ function loadEvent(filePath) {
       client.on(event.name, execute);
     }
 
-    console.log(
-      `✅ Loaded event: ${event.name} from ${path.basename(filePath)}`,
-    );
+    // console.log(
+    //   `✅ Loaded event: ${event.name} from ${path.basename(filePath)}`,
+    // );
   } catch (error) {
     console.error(`❌ Failed to load event from ${filePath}:`, error);
   }
