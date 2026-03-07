@@ -4,6 +4,7 @@ const client = require("../client/client");
 
 module.exports = () => {
   const commandsPath = path.join(__dirname, "../commands");
+  const systemsPath = path.join(__dirname, "../systems"); // Added systems path
 
   // Function to recursively get all files
   const getFilesRecursively = (dir) => {
@@ -26,7 +27,10 @@ module.exports = () => {
     return commandFiles;
   };
 
-  const commandFiles = getFilesRecursively(commandsPath);
+  const commandFiles = [
+    ...getFilesRecursively(commandsPath),
+    ...getFilesRecursively(systemsPath), // Include files from systems
+  ];
 
   for (const filePath of commandFiles) {
     try {
@@ -34,7 +38,12 @@ module.exports = () => {
       const fileName = path.basename(filePath);
 
       // Load message commands (prefix commands)
-      if ("name" in command && "execute" in command) {
+      // Check for name, execute, and description (to distinguish from events)
+      if (
+        "name" in command &&
+        "execute" in command &&
+        "description" in command
+      ) {
         client.commands.set(command.name, command);
         console.log(`✅ Loaded message command: ${command.name}`);
       }

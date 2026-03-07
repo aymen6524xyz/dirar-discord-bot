@@ -4,6 +4,9 @@ const client = require("../client/client");
 
 module.exports = () => {
   const eventsPath = path.join(__dirname, "../events");
+  const systemsPath = path.join(__dirname, "../systems");
+
+  // Load standard events
   if (fs.existsSync(eventsPath)) {
     const eventFiles = fs
       .readdirSync(eventsPath)
@@ -12,6 +15,35 @@ module.exports = () => {
     for (const file of eventFiles) {
       const filePath = path.join(eventsPath, file);
       loadEvent(filePath);
+    }
+  }
+
+  // Load system events
+  if (fs.existsSync(systemsPath)) {
+    const systemFolders = fs
+      .readdirSync(systemsPath)
+      .filter((file) =>
+        fs.statSync(path.join(systemsPath, file)).isDirectory(),
+      );
+
+    for (const folder of systemFolders) {
+      const systemFolderPath = path.join(systemsPath, folder);
+      const systemFiles = fs
+        .readdirSync(systemFolderPath)
+        .filter((file) => file.endsWith(".js"));
+
+      for (const file of systemFiles) {
+        const filePath = path.join(systemFolderPath, file);
+        // We only load it if it exports 'name' and 'execute' like an event
+        try {
+          const event = require(filePath);
+          if (event.name && event.execute) {
+            loadEvent(filePath);
+          }
+        } catch (e) {
+          console.error(`Example check failed for ${filePath}`, e);
+        }
+      }
     }
   }
 };
