@@ -17,13 +17,27 @@ module.exports = () => {
 };
 
 function loadEvent(filePath) {
-  const event = require(filePath);
+  try {
+    const event = require(filePath);
 
-  if (event.once) {
-    client.once(event.name, (...args) => event.execute(...args));
-  } else {
-    client.on(event.name, (...args) => event.execute(...args));
+    const execute = async (...args) => {
+      try {
+        await event.execute(...args);
+      } catch (error) {
+        console.error(`❌ Error in event ${event.name}:`, error);
+      }
+    };
+
+    if (event.once) {
+      client.once(event.name, execute);
+    } else {
+      client.on(event.name, execute);
+    }
+
+    console.log(
+      `✅ Loaded event: ${event.name} from ${path.basename(filePath)}`,
+    );
+  } catch (error) {
+    console.error(`❌ Failed to load event from ${filePath}:`, error);
   }
-
-  console.log(`✅ Loaded event: ${event.name} from ${path.basename(filePath)}`);
 }

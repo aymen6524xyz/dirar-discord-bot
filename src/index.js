@@ -13,3 +13,14 @@ client.login(config.token).catch((error) => {
   console.error("❌ Failed to login:", error);
   process.exit(1);
 });
+
+// Global Error Handling
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("❌ Unhandled Rejection at:", promise, "reason:", reason);
+  // Ideally, log this to a file or special channel
+});
+
+process.on("uncaughtException", (error) => {
+  console.error("❌ Uncaught Exception:", error);
+  // Ideally, log this to a file or special channel
+});

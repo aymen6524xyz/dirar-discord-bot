@@ -1,18 +1,22 @@
-const { Events, MessageFlags } = require('discord.js');
-const client = require('../client/client');
-const { hasPermission } = require('../utils/permissions');
-const { getDenialMessage } = require('../utils/roasts');
-const { isBlacklisted } = require('../utils/blacklistManager');
+const { Events, MessageFlags } = require("discord.js");
+const client = require("../client/client");
+const { hasPermission } = require("../utils/permissions");
+const { getCommandRequiredPerms } = require("../utils/commandPermsManager");
+const { getDenialMessage } = require("../utils/roasts");
+const { isBlacklisted } = require("../utils/blacklistManager");
 
 module.exports = {
   name: Events.InteractionCreate,
   async execute(interaction) {
     // Check Blacklist for all interactions
     if (isBlacklisted(interaction.user.id)) {
-        if (interaction.isRepliable()) {
-            await interaction.reply({ content: '🚫 You are blacklisted from using this bot.', flags: MessageFlags.Ephemeral });
-        }
-        return;
+      if (interaction.isRepliable()) {
+        await interaction.reply({
+          content: "🚫 You are blacklisted from using this bot.",
+          flags: MessageFlags.Ephemeral,
+        });
+      }
+      return;
     }
 
     // Handle slash commands
@@ -20,12 +24,17 @@ module.exports = {
       const command = client.slashCommands.get(interaction.commandName);
 
       if (!command) {
-        console.error(`No command matching ${interaction.commandName} was found.`);
+        console.error(
+          `No command matching ${interaction.commandName} was found.`,
+        );
         return;
       }
 
       // Check permissions (default to 3 if not specified)
-      const requiredPerms = command.perms || 3;
+      const requiredPerms = getCommandRequiredPerms(
+        interaction.commandName,
+        command.perms || 3,
+      );
       if (!hasPermission(interaction.user.id, requiredPerms)) {
         return interaction.reply({
           content: getDenialMessage(interaction.user.id),
@@ -40,13 +49,13 @@ module.exports = {
         } else if (command.execute) {
           await command.execute(interaction);
         } else {
-          throw new Error('Command has no execute method');
+          throw new Error("Command has no execute method");
         }
       } catch (error) {
         console.error(`Error executing ${interaction.commandName}:`, error);
-        
+
         const errorMessage = {
-          content: '❌ There was an error executing this command!',
+          content: "❌ There was an error executing this command!",
           flags: MessageFlags.Ephemeral,
         };
 
@@ -59,4 +68,3 @@ module.exports = {
     }
   },
 };
-

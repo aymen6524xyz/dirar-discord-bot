@@ -79,9 +79,10 @@ module.exports = {
     const weekAgo = now - 7 * 24 * 60 * 60 * 1000;
 
     // Matches:
-    // ss 123456789
-    // ss <@123456789>
-    const verifyPattern = /^ss\s+(<@!?(\d+)>|\d+)$/i;
+    // !ss 123456789
+    // !ss <@123456789>
+    // !ss 123456789 (optional note)
+    const verifyPattern = /^!ss\s+(<@!?(\d+)>|\d+)/i;
 
     const counter = new Map();
 

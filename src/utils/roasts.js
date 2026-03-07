@@ -1,62 +1,41 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 // Load roasts from JSON file
-const roastsPath = path.join(__dirname, '../data/roasts.json');
-const roastComponentsPath = path.join(__dirname, '../data/roast_components.json');
+const roastsPath = path.join(__dirname, "../data/roasts.json");
 let roasts = [];
-let roastComponents = null;
+
+// Removed roastComponents loading
 
 try {
-    if (fs.existsSync(roastComponentsPath)) {
-        roastComponents = JSON.parse(fs.readFileSync(roastComponentsPath, 'utf8'));
-    }
+  if (fs.existsSync(roastsPath)) {
+    roasts = JSON.parse(fs.readFileSync(roastsPath, "utf8"));
+  } else {
+    // Fallback default roasts in case file is missing
+    roasts = ["🛑 **Stop!** Error loading roasts. Use commands properly."];
+    // Create the file with default if missing? Or just log error.
+    // For now, let's keep it simple.
+  }
 } catch (error) {
-    console.error("Failed to load roast_components.json:", error);
-}
-
-try {
-    if (fs.existsSync(roastsPath)) {
-        roasts = JSON.parse(fs.readFileSync(roastsPath, 'utf8'));
-    } else {
-        // Fallback default roasts in case file is missing
-        roasts = ["🛑 **Stop!** Error loading roasts. Use commands properly."];
-        // Create the file with default if missing? Or just log error.
-        // For now, let's keep it simple.
-    }
-} catch (error) {
-    console.error("Failed to load roasts.json:", error);
-    roasts = ["🛑 **Error** loading roasts system."];
+  console.error("Failed to load roasts.json:", error);
+  roasts = ["🛑 **Error** loading roasts system."];
 }
 
 // Function to reload roasts (useful if we add a command to update them later)
 function reloadRoasts() {
-    try {
-        if (fs.existsSync(roastsPath)) {
-            const data = fs.readFileSync(roastsPath, 'utf8');
-            roasts = JSON.parse(data);
-        }
-        if (fs.existsSync(roastComponentsPath)) {
-            roastComponents = JSON.parse(fs.readFileSync(roastComponentsPath, 'utf8'));
-        }
-        return true;
-    } catch (e) {
-        console.error(e);
+  try {
+    if (fs.existsSync(roastsPath)) {
+      const data = fs.readFileSync(roastsPath, "utf8");
+      roasts = JSON.parse(data);
     }
-    return false;
+    return true;
+  } catch (e) {
+    console.error(e);
+  }
+  return false;
 }
 
-function generateRoast() {
-    if (!roastComponents || !roastComponents.templates || !roastComponents.adjectives || !roastComponents.nouns) {
-        return "You are so uninspiring, I can't even generate a roast for you.";
-    }
-    
-    const template = roastComponents.templates[Math.floor(Math.random() * roastComponents.templates.length)];
-    const adjective = roastComponents.adjectives[Math.floor(Math.random() * roastComponents.adjectives.length)];
-    const noun = roastComponents.nouns[Math.floor(Math.random() * roastComponents.nouns.length)];
-    
-    return template.replace('{adjective}', adjective).replace('{noun}', noun);
-}
+// Removed generateRoast function as we only use roasts.json now
 
 const compliments = [
   "👑 **Your Majesty!** Forgive me, but this command is beneath your stature.",
@@ -68,7 +47,7 @@ const compliments = [
   "🚀 **Supreme!** Your level is far too high; this command is too small for you.",
   "🌟 **Shining Star!** Sorry Boss, the bot is confused. You deserve everything.",
   "🌹 **Your Grace!** Do not trouble yourself; this is merely code. You are the origin.",
-  "🙇 **We are not worthy!** Forgive me, my liege, I cannot execute the order on such greatness."
+  "🙇 **We are not worthy!** Forgive me, my liege, I cannot execute the order on such greatness.",
 ];
 
 const femaleCompliments = [
@@ -78,11 +57,15 @@ const femaleCompliments = [
   "🌟 **Superstar!** The bot bows to your elegance.",
   "🌹 **Lovely Rose!** No roast could ever touch you.",
   "💖 **Madame!** We are at your command, always.",
-  "🦋 **Beautiful Soul!** You are too perfect for my silly roasts."
+  "🦋 **Beautiful Soul!** You are too perfect for my silly roasts.",
 ];
 
-const vipIds = ['696331073562607676', '541763571357319168', '1082257882935984128'];
-const specialLadies = ['1385028340573929472'];
+const vipIds = [
+  "696331073562607676",
+  "541763571357319168",
+  "1082257882935984128",
+];
+const specialLadies = ["1385028340573929472"];
 const recentRoasts = new Set();
 const HISTORY_SIZE = 50;
 
@@ -96,27 +79,22 @@ function getDenialMessage(userId) {
     const randomIndex = Math.floor(Math.random() * compliments.length);
     return compliments[randomIndex];
   }
-  
+
   let attempts = 0;
   let message = "";
-  
-  // Try to generate a unique roast
+
+  // Try to pick a unique roast
   do {
-      attempts++;
-      // 80% chance to use a generated roast vs a static one for higher variety
-      if (roastComponents && Math.random() > 0.2) {
-          message = generateRoast();
-      } else {
-          const randomIndex = Math.floor(Math.random() * roasts.length);
-          message = roasts[randomIndex];
-      }
+    attempts++;
+    const randomIndex = Math.floor(Math.random() * roasts.length);
+    message = roasts[randomIndex];
   } while (recentRoasts.has(message) && attempts < 10);
 
   // Update history
   recentRoasts.add(message);
   if (recentRoasts.size > HISTORY_SIZE) {
-      const iterator = recentRoasts.values();
-      recentRoasts.delete(iterator.next().value);
+    const iterator = recentRoasts.values();
+    recentRoasts.delete(iterator.next().value);
   }
 
   return message;
@@ -124,8 +102,9 @@ function getDenialMessage(userId) {
 
 module.exports = {
   getDenialMessage,
-  get roasts() { return roasts }, // Getter to ensure we always get current list if using require ref
+  get roasts() {
+    return roasts;
+  }, // Getter to ensure we always get current list if using require ref
   compliments,
   reloadRoasts,
-  generateRoast
 };
