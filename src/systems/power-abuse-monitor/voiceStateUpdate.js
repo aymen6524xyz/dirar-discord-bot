@@ -77,6 +77,18 @@ module.exports = {
 
     if (!changeType) return;
 
+    // Check for ignored channels
+    const IGNORED_CHANNELS = [
+      "1395169083393179720",
+      "978701419660075138",
+      "978701551046656030",
+      "978701634366500964",
+    ];
+
+    if (newState.channelId && IGNORED_CHANNELS.includes(newState.channelId)) {
+      return;
+    }
+
     // --- HELPER FUNCTION TO CHECK AUDIT LOGS ---
     const checkAuditLog = async (isRetry = false) => {
       try {

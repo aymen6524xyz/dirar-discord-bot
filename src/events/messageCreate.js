@@ -162,7 +162,7 @@ module.exports = {
 
     // Check permissions (default to 3 if not specified)
     const requiredPerms = getCommandRequiredPerms(
-      commandName,
+      command.name,
       command.perms || 3,
     );
     if (!hasPermission(message.author.id, requiredPerms)) {

@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require("discord.js");
 const config = require("../config/env");
 const { isMaster } = require("../utils/masterManager");
+const { isAgrAdmin } = require("../utils/agrAdminManager");
 
 const PINKIE_ID = "312729837506789377";
 const SAFWAN_ID = "181607813666177024";
@@ -69,12 +70,17 @@ module.exports = {
       );
     }
 
-    // 4. Master
+    // 4. AGR Admin
+    if (isAgrAdmin(targetId)) {
+      return message.reply("⚔️ This user is an **AGR Admin**.");
+    }
+
+    // 5. Master
     if (isMaster(targetId)) {
       return message.reply("🛡️ This user is a **Master**.");
     }
 
-    // 5. Normal Member
+    // 6. Normal Member
     // "if member say is a normal ameber"
     return message.reply("👤 This user is a normal member.");
   },

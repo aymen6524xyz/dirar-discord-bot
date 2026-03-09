@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const config = require("../config/env");
+const { isAgrAdmin } = require("../utils/agrAdminManager");
 
 const PINKIE_ID = "312729837506789377";
 const VERIFICATION_CHANNEL_ID = "800640245992652840";
@@ -40,7 +41,7 @@ module.exports = {
       return context.channel.send(content);
     };
 
-    if (!isOwner && !isPinkie) {
+    if (!isOwner && !isPinkie && !isAgrAdmin) {
       return sendReply(
         "⛔ You do not have permission to use this command.",
         true,
