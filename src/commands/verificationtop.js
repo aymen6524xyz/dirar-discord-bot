@@ -41,7 +41,7 @@ module.exports = {
       return context.channel.send(content);
     };
 
-    if (!isOwner && !isPinkie && !isAgrAdmin) {
+    if (!isOwner && !isPinkie && !isAgrAdmin(user.id)) {
       return sendReply(
         "⛔ You do not have permission to use this command.",
         true,
@@ -87,6 +87,12 @@ module.exports = {
 
     const counter = new Map();
 
+    const dayOrder = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(now - i * 24 * 60 * 60 * 1000);
+      dayOrder.push(d.toLocaleDateString("en-US", { weekday: "short" }));
+    }
+
     let lastMessageId = null;
     let fetching = true;
 
@@ -108,8 +114,17 @@ module.exports = {
           if (msg.author.bot) continue;
 
           if (verifyPattern.test(msg.content.trim())) {
-            const count = counter.get(msg.author.id) || 0;
-            counter.set(msg.author.id, count + 1);
+            const userId = msg.author.id;
+            if (!counter.has(userId)) {
+              counter.set(userId, { total: 0, days: {} });
+            }
+            const userStats = counter.get(userId);
+            userStats.total++;
+
+            const dayKey = msg.createdAt.toLocaleDateString("en-US", {
+              weekday: "short",
+            });
+            userStats.days[dayKey] = (userStats.days[dayKey] || 0) + 1;
           }
         }
 
@@ -124,11 +139,13 @@ module.exports = {
       }
 
       // Sort leaderboard
-      const sorted = [...counter.entries()].sort((a, b) => b[1] - a[1]);
+      const sorted = [...counter.entries()]
+        .sort((a, b) => b[1].total - a[1].total)
+        .slice(0, 15);
 
       const leaderboard = (
         await Promise.all(
-          sorted.map(async ([userId, count], index) => {
+          sorted.map(async ([userId, stats], index) => {
             let user = context.guild.members.cache.get(userId);
             if (!user) {
               user = await context.guild.members
@@ -136,10 +153,18 @@ module.exports = {
                 .catch(() => null);
             }
             const name = user ? user.displayName : `User ${userId}`;
-            return `**${index + 1}.** ${name} — \`${count}\` verifications`;
+
+            const dailyBreakdown = dayOrder
+              .map((day) => {
+                const count = stats.days[day] || 0;
+                return `${day}: \`${count}\``;
+              })
+              .join(" • ");
+
+            return `**${index + 1}.** ${name} — **${stats.total}** Total\n> ${dailyBreakdown}`;
           }),
         )
-      ).join("\n");
+      ).join("\n\n");
 
       const embed = new EmbedBuilder()
         .setTitle("🏆 Weekly Verification Leaderboard")
