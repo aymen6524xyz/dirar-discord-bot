@@ -27,7 +27,7 @@ module.exports = {
       "## 🔍 A staff member will verify you shortly.\n" +
       "## ⚠️ Make sure your microphone is working and you're ready to speak if asked.\n\n" +
       "## ❤️ Verification helps keep our community safe.\n" +
-      "https://discord.com/channels/392360591114633217/913899047989936138";
+      "https://discord.com/channels/392360591114633217/1480344225341112411";
 
     await channel.send(msgContent);
   }
