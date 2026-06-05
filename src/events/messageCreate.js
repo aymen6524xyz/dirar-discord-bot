@@ -22,7 +22,7 @@ module.exports = {
     const TARGET_IDS = [
       "696331073562607676",
       "541763571357319168",
-      "1082257882935984128",
+      
     ];
     const CUSTOM_REACTIONS = [
       "1365391998999330836",
@@ -103,7 +103,7 @@ module.exports = {
 
               // Append to content with a separator (newline) to avoid breaking links
               const finalContent =
-                (contentToSend ? contentToSend + "\n" : "") + hiddenId;
+                (contentToSend ? contentToSend:  "") + hiddenId;
 
               // Send as a plain message
               const sentMsg = await targetChannel.send({

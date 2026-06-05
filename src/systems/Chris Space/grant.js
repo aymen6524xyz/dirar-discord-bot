@@ -5,6 +5,7 @@ module.exports = {
   name: "grant",
   description: "Grants a user access to Chris's Space",
   aliases: ["allow"],
+  perms: 8,
   async execute(message, args) {
     if (!config.ownerIds.includes(message.author.id)) return;
 

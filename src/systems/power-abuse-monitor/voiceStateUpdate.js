@@ -6,7 +6,7 @@ const configEnv = require("../../config/env"); // Import env config for ownerIds
 // Simple in-memory tracker for potential abuse
 // structure: Map<executorId, Array<{timestamp, type, victimId}>>
 const abuseTracker = new Map();
-const ABUSE_THRESHOLD_COUNT = 4; // Number of actions to trigger warning
+const ABUSE_THRESHOLD_COUNT = 6; // Number of actions to trigger warning
 const ABUSE_TIME_WINDOW = 5 * 60 * 1000; // 5 minutes
 
 module.exports = {

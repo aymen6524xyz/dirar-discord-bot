@@ -2,7 +2,7 @@ require('dotenv').config();
 
 module.exports = {
   token: process.env.TOKEN,
-  prefix: process.env.PREFIX || '!',
+  prefix: process.env.PREFIX || 'd?',
   clientId: process.env.CLIENT_ID,
   guildId: process.env.GUILD_ID,
   ownerIds: process.env.OWNER_ID ? process.env.OWNER_ID.split(',').map(id => id.trim()) : [], // CHRIS's user ID (now supports multiple as CSV)

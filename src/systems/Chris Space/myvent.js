@@ -90,6 +90,7 @@ const createAndMove = async (member, guild) => {
 module.exports = {
   name: "myvent",
   description: "Creates Chris's Space",
+  perms: 8,
   async execute(message, args) {
     // Check if user is owner
     if (!config.ownerIds.includes(message.author.id)) {

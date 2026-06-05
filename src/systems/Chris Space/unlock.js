@@ -4,6 +4,7 @@ const config = require("../../config/env");
 module.exports = {
   name: "unlock",
   description: "Unlocks Chris's Space for everyone",
+  perms: 8,
   async execute(message, args) {
     if (!config.ownerIds.includes(message.author.id)) return;
 

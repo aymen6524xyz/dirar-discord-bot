@@ -82,33 +82,38 @@ module.exports = {
       )
       .setFooter({ text: "Use d?help <command> for more info" });
 
-    if (publicCommands.length > 0) {
-      embed.addFields({
-        name: "🌍 Public Commands",
-        value: publicCommands.join("\n"),
-      });
-    }
+    const chunkArray = (arr, maxLen) => {
+      let currentChunk = [];
+      let currentLen = 0;
+      const chunks = [];
+      for (const item of arr) {
+        if (currentLen + item.length + 1 > maxLen) {
+          chunks.push(currentChunk.join("\n"));
+          currentChunk = [];
+          currentLen = 0;
+        }
+        currentChunk.push(item);
+        currentLen += item.length + 1;
+      }
+      if (currentChunk.length > 0) chunks.push(currentChunk.join("\n"));
+      return chunks;
+    };
 
-    if (modCommands.length > 0) {
-      embed.addFields({
-        name: "🛡️ Master Commands",
-        value: modCommands.join("\n"),
-      });
-    }
+    const addCommandFields = (name, cmdArray) => {
+        if (cmdArray.length === 0) return;
+        const chunks = chunkArray(cmdArray, 1000);
+        chunks.forEach((chunk, index) => {
+            embed.addFields({
+                name: index === 0 ? name : `${name} (Continued)`,
+                value: chunk
+            });
+        });
+    };
 
-    if (agrAdminCommands.length > 0) {
-      embed.addFields({
-        name: "⚔️ AGR Admin Commands",
-        value: agrAdminCommands.join("\n"),
-      });
-    }
-
-    if (adminCommands.length > 0) {
-      embed.addFields({
-        name: "👑 Owner Commands",
-        value: adminCommands.join("\n"),
-      });
-    }
+    addCommandFields("🌍 Public Commands", publicCommands);
+    addCommandFields("🛡️ Master Commands", modCommands);
+    addCommandFields("⚔️ AGR Admin Commands", agrAdminCommands);
+    addCommandFields("👑 Owner Commands", adminCommands);
 
     if (
       publicCommands.length === 0 &&

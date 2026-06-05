@@ -5,6 +5,7 @@ module.exports = {
   name: "deny",
   description: "Denies a user access to Chris's Space",
   aliases: ["revoke", "remove"],
+  perms: 8,
   async execute(message, args) {
     if (!config.ownerIds.includes(message.author.id)) return;
 
