@@ -1,15 +1,20 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { getOriginalUser, getLastActiveUser } = require('../utils/replyManager');
+const {
+    getOriginalUser,
+    getLastActiveUser,
+    getLastMessageId,
+    getLatestMessageIdForUser
+} = require('../utils/replyManager');
 const { getTargetChannelId } = require('../utils/dmChatManager');
 const { decodeUserInfo } = require('../utils/idEncoder');
 
 module.exports = {
     name: 'reply',
-    description: 'Reply to a forwarded DM. Use "last" to reply to the most recent DM.',
+    description: 'Reply in the target channel to a forwarded DM.',
     perms: 8, // Master only
     data: new SlashCommandBuilder()
         .setName('reply')
-        .setDescription('Reply to a forwarded DM')
+        .setDescription('Reply in the target channel to a forwarded DM')
         .addStringOption(option => 
             option.setName('target')
                 .setDescription('Message ID, "last", or Username')
@@ -50,11 +55,11 @@ module.exports = {
         // 1. Check for "last" keyword
         if (targetInput.toLowerCase() === 'last') {
             originalUserId = getLastActiveUser();
+            replyToMessageId = getLastMessageId();
             if (!originalUserId) {
                 const msg = `❌ No recent DMs found to reply to.`;
                 return isSlash ? ctx.editReply(msg) : ctx.reply(msg);
             }
-            // We don't have a message ID for "last" easily available to reply to
         } 
         // 2. Check if input is a Message ID/Link
         else {
@@ -161,6 +166,7 @@ module.exports = {
                     
                     if (user) {
                         originalUserId = user.id;
+                        replyToMessageId = getLatestMessageIdForUser(user.id);
                     } else {
                         const msg = `❌ Could not find user/message for \`${targetInput}\`. Try using 'last' or a valid ID.`;
                         return isSlash ? ctx.editReply(msg) : ctx.reply(msg);
@@ -171,9 +177,16 @@ module.exports = {
     }
 
         try {
-            // Fetch User
-            const user = await client.users.fetch(originalUserId);
-            if (!user) throw new Error("User not found via API.");
+            const targetChannelId = getTargetChannelId();
+            if (!targetChannelId) {
+                const errMsg = `❌ No target channel is configured.`;
+                return isSlash ? ctx.editReply(errMsg) : ctx.reply(errMsg);
+            }
+
+            const targetChannel = await client.channels.fetch(targetChannelId);
+            if (!targetChannel || !targetChannel.isTextBased()) {
+                throw new Error("Configured target channel is not text-based or could not be found.");
+            }
 
             const payload = { content: content, files: [] };
 
@@ -185,41 +198,23 @@ module.exports = {
                  ctx.attachments.forEach(att => payload.files.push(att));
             }
 
-            await user.send(payload);
-
-            // Log to Staff Channel
-            try {
-                const targetChannelId = getTargetChannelId();
-                if (targetChannelId) {
-                    const targetChannel = await client.channels.fetch(targetChannelId).catch(() => null);
-                    if (targetChannel) {
-                        let logContent = `${content || '[File Sent]'}`;
-                        
-                        if (replyToMessageId) {
-                             await targetChannel.send({ content: logContent, reply: { messageReference: replyToMessageId, failIfNotExists: false } });
-                        } else {
-                             await targetChannel.send({ content: logContent });
-                        }
-                    }
-                }
-            } catch (logErr) {
-                console.error("Failed to log reply:", logErr);
+            if (replyToMessageId) {
+                payload.reply = {
+                    messageReference: replyToMessageId,
+                    failIfNotExists: false
+                };
             }
 
-            const successMsg = `✅ **Anonymous** reply sent to **${user.tag}**!`;
+            await targetChannel.send(payload);
+
+            const successMsg = `✅ Reply sent in the target channel.`;
             return isSlash ? ctx.editReply(successMsg) : ctx.reply(successMsg);
 
         } catch (error) {
             console.error("Reply Error:", error);
-
-            if (error.code === 50007) {
-                const errMsg = `❌ **Cannot send DM to this user.**\nThey have likely disabled DMs from server members, blocked the bot, or are no longer in the server.`;
-                return isSlash ? ctx.editReply(errMsg) : ctx.reply(errMsg);
-            }
 
             const errMsg = `❌ Failed to send: ${error.message}`;
             return isSlash ? ctx.editReply(errMsg) : ctx.reply(errMsg);
         }
     }
 }
-

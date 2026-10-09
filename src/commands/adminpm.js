@@ -73,7 +73,11 @@ module.exports = {
         return isSlash ? ctx.editReply(msg) : ctx.reply(msg);
       }
 
-      const payload = { content: userMsg || undefined }; 
+      const payload = {
+        content: userMsg
+          ? `Hello this is an AGR Support PM : ${userMsg}`
+          : undefined
+      };
       const files = [];
 
       // Handle Slash Attachment

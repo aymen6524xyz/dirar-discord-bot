@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Privacy Policy for Colonel Hans, a Discord community management bot.">
+  <meta name="theme-color" content="#0D1117">
+  <title>Privacy Policy | Colonel Hans</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html" aria-label="Colonel Hans home">
+        <span class="brand-mark" aria-hidden="true">CH</span>
+        <span>Colonel Hans</span>
+      </a>
+      <nav aria-label="Primary navigation">
+        <a class="nav-link" href="#contact">Contact</a>
+        <a class="button button-small" href="#policy">Read policy</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <p class="eyebrow">Colonel Hans · Discord bot</p>
+          <h1>Privacy Policy</h1>
+          <p class="hero-copy">A clear explanation of what Colonel Hans processes, why it is needed, and how server members and administrators can request help.</p>
+          <p class="updated">Last updated: <strong>[REPLACE BEFORE PUBLISHING]</strong></p>
+        </div>
+        <aside class="hero-card" aria-label="Policy summary">
+          <span class="shield" aria-hidden="true">◆</span>
+          <h2>Privacy, without the jargon</h2>
+          <p>This policy is written for people who use Discord servers where Colonel Hans is installed.</p>
+        </aside>
+      </div>
+    </section>
+
+    <div class="container layout">
+      <aside class="toc" aria-labelledby="contents-heading">
+        <h2 id="contents-heading">On this page</h2>
+        <ol>
+          <li><a href="#introduction">Introduction</a></li>
+          <li><a href="#information">Information we process</a></li>
+          <li><a href="#use">How we use information</a></li>
+          <li><a href="#messages">Message content and permissions</a></li>
+          <li><a href="#storage">Storage and security</a></li>
+          <li><a href="#retention">Data retention</a></li>
+          <li><a href="#sharing">Sharing and disclosure</a></li>
+          <li><a href="#rights">Rights and deletion</a></li>
+          <li><a href="#children">Children's privacy</a></li>
+          <li><a href="#changes">Policy changes</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ol>
+      </aside>
+
+      <article id="policy" class="policy">
+        <section id="introduction">
+          <p class="section-kicker">01 · Overview</p>
+          <h2>Introduction</h2>
+          <p>Colonel Hans is a multipurpose Discord bot built with Node.js and Discord.js. It can support community administration, verification alerts, moderation workflows, voice-channel monitoring, direct-message relay, and other server-configured commands.</p>
+          <p>This policy explains how the bot processes information when it is installed in or used on a Discord server. It applies to server members, visitors who interact with the bot, and server administrators who configure it. Discord also processes information under its own policies and terms.</p>
+          <div class="notice"><strong>Owner review required:</strong> Replace every bracketed placeholder on this page and confirm the operational details before publishing.</div>
+        </section>
+
+        <section id="information">
+          <p class="section-kicker">02 · Data map</p>
+          <h2>Information we process</h2>
+          <p>The bot only receives information made available through Discord events and the permissions granted to it. Based on the current source code, the following categories are relevant:</p>
+          <div class="data-grid">
+            <div class="data-card"><h3>Persisted in local JSON files</h3><p>Discord user IDs associated with DM relay permissions, blacklist entries, configured administrators, and forwarded-message lookup mappings. Some entries also include a reason, expiration, or timestamp.</p></div>
+            <div class="data-card"><h3>Processed temporarily</h3><p>Message content for prefix commands, direct-message forwarding, reactions, and the automated slur filter. Voice-state changes, member/role context, and audit-log entries may be held in memory while alerts or abuse checks run.</p></div>
+            <div class="data-card"><h3>Sent to Discord channels</h3><p>When DM relay is enabled, the bot forwards a user's message, attachments, and stickers to a configured staff channel. A user ID is encoded into the forwarded message so authorised staff can reply.</p></div>
+            <div class="data-card"><h3>Not intentionally collected</h3><p>The source reviewed does not show a separate analytics database, advertising profile, website tracker, or a general-purpose archive of every message. The bot does not intentionally request passwords, payment details, or Discord tokens.</p></div>
+          </div>
+          <p>The bot can see usernames, display names, roles, channel IDs, server IDs, message IDs, and other Discord metadata when required by an event or command. It does not necessarily store each item permanently. Server administrators should review their enabled systems and Discord permissions.</p>
+          <p>The verification leaderboard command reads recent messages from one configured verification channel, identifies matching verification commands, and calculates a seven-day result in memory. The reviewed implementation does not save that leaderboard as a separate database record. Moderation and verification log commands instead publish embeds containing IDs, names, reasons, and timestamps to the Discord channel where they are used.</p>
+        </section>
+
+        <section id="use">
+          <p class="section-kicker">03 · Purpose</p>
+          <h2>How we use information</h2>
+          <ul>
+            <li>To execute prefix and slash commands and enforce configured permission levels.</li>
+            <li>To operate server-specific DM relay, verification alerts, moderation notifications, and administrative automation.</li>
+            <li>To react to configured events, remove messages identified by the automated filter, and apply configured timeouts where the bot has permission.</li>
+            <li>To detect recent voice moderation changes and notify an authorised monitoring channel about possible abuse.</li>
+            <li>To troubleshoot failures using console diagnostics and error messages.</li>
+          </ul>
+          <p>Server owners and authorised administrators decide which channels, roles, and features are configured. Colonel Hans is not a replacement for a server's own moderation judgment.</p>
+        </section>
+
+        <section id="messages">
+          <p class="section-kicker">04 · Discord access</p>
+          <h2>Message content and Discord permissions</h2>
+          <p>Colonel Hans is configured with Discord's <strong>Message Content</strong>, <strong>Guild Messages</strong>, <strong>Direct Messages</strong>, <strong>Guilds</strong>, and <strong>Guild Voice States</strong> gateway intents. It processes message content to recognise prefix commands, handle permitted DM relay, react to configured IDs, and run the automated slur filter.</p>
+          <p>Ordinary message content is not written to the bot's local JSON data by the reviewed code. However, a permitted DM and its attachments can be forwarded into a Discord staff channel, where Discord and that server's administrators may retain it. The DM relay mapping stores the originating user ID and forwarded message ID with a timestamp.</p>
+          <p>Messages flagged by the slur filter are deleted when possible. The filter's per-user count exists in memory and is reset after 15 minutes; this is not a permanent moderation history in the reviewed code.</p>
+        </section>
+
+        <section id="storage">
+          <p class="section-kicker">05 · Safeguards</p>
+          <h2>Data storage and security</h2>
+          <p>The reviewed project uses local JSON files rather than SQLite or another database. These files include configuration and bot operational data such as DM relay mappings, allowlists, blacklists, and administrator IDs. Some event trackers exist only in process memory. Console logs may contain operational errors and Discord identifiers depending on the event.</p>
+          <p>The source does not establish encryption at rest, a formal access-control program, backups, a security certification, or a guaranteed hosting environment. The operator is responsible for protecting the bot host, configuration files, environment variables, and Discord token. Never publish those secrets with this website.</p>
+        </section>
+
+        <section id="retention">
+          <p class="section-kicker">06 · Lifecycle</p>
+          <h2>Data retention</h2>
+          <p>The only explicit retention rule found in the reviewed code is that DM relay lookup mappings older than seven days are pruned when new mappings are saved. In-memory slur-filter counters expire after 15 minutes, and verification alert messages are scheduled for deletion after 10 minutes when deletion succeeds.</p>
+          <p>Configured allowlists, blacklists, administrator IDs, and other JSON configuration entries do not have a general automatic retention period. <strong>[OWNER: define and document retention periods for these records, console logs, and any server-specific logs before publication.]</strong></p>
+          <p>Removing the bot from a server does not, based on the reviewed code, automatically erase local JSON records. A deletion request may be needed separately.</p>
+        </section>
+
+        <section id="sharing">
+          <p class="section-kicker">07 · Disclosure</p>
+          <h2>Sharing and disclosure</h2>
+          <p>Colonel Hans relies on Discord's API and infrastructure to receive events and send responses. Information can therefore be transmitted to Discord and displayed to members or staff in the channels where the bot operates. The DM relay feature specifically sends permitted messages and attachments to its configured Discord staff channel.</p>
+          <p>No separate analytics, advertising, or external data-broker integration was identified in the reviewed source. The project includes optional AI and media dependencies; <strong>[OWNER: confirm whether any AI, media, or other external service is enabled in production and update this section if it sends user content or metadata outside Discord.]</strong></p>
+          <p>Information may also be disclosed when required by law or to protect the service, users, or a Discord community. The operator should document any such disclosure process.</p>
+        </section>
+
+        <section id="rights">
+          <p class="section-kicker">08 · Requests</p>
+          <h2>User rights and data deletion</h2>
+          <p>Where applicable law gives you rights to access, correct, or delete personal information, contact the operator using the details below. Include your Discord user ID, the server involved, the request you are making, and enough information to locate the record. Do not send a password or bot token.</p>
+          <p>Server administrators may also request removal of server-specific configuration and records. The operator will assess requests, verify them appropriately, and explain any legal or operational reason a record must be retained. Discord content copied into a staff channel may also need to be deleted by the relevant server administrators.</p>
+          <p><strong>[OWNER: describe the identity-verification process, response timeline, and exact deletion steps before publication.]</strong></p>
+        </section>
+
+        <section id="children">
+          <p class="section-kicker">09 · Age</p>
+          <h2>Children's privacy</h2>
+          <p>Colonel Hans is intended to operate within Discord communities and Discord's applicable age requirements. The operator does not knowingly seek information from children outside those requirements. If you believe information has been processed in a way that raises a children's privacy concern, contact the operator promptly. The operator should obtain legal advice about any obligations that apply in the countries where the bot is offered.</p>
+        </section>
+
+        <section id="changes">
+          <p class="section-kicker">10 · Updates</p>
+          <h2>Policy changes</h2>
+          <p>Updates will be published on this page. The “Last updated” date will change when the policy changes materially. Server owners and users should review the latest version periodically, especially before using DM relay or moderation features.</p>
+        </section>
+
+        <section id="contact" class="contact-section">
+          <p class="section-kicker">11 · Get in touch</p>
+          <h2>Contact information</h2>
+          <p>For privacy questions, access requests, corrections, or deletion requests, contact:</p>
+          <dl class="contact-list">
+            <div><dt>Responsible operator</dt><dd>[REPLACE: bot owner or legal operator]</dd></div>
+            <div><dt>Email</dt><dd><a href="mailto:[REPLACE-BEFORE-PUBLISHING@example.com]">[REPLACE BEFORE PUBLISHING: official email]</a></dd></div>
+            <div><dt>Support server</dt><dd><a href="[REPLACE BEFORE PUBLISHING: HTTPS support-server invite]">[REPLACE BEFORE PUBLISHING: support server link]</a></dd></div>
+            <div><dt>Effective date</dt><dd>[REPLACE BEFORE PUBLISHING]</dd></div>
+            <div><dt>Last updated</dt><dd>[REPLACE BEFORE PUBLISHING]</dd></div>
+          </dl>
+        </section>
+      </article>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p><strong>Colonel Hans</strong><br><span>Privacy Policy</span></p>
+      <p>© [REPLACE: year] [REPLACE: owner name]. Not affiliated with Discord Inc.</p>
+      <a href="#main-content">Back to top ↑</a>
+    </div>
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html>

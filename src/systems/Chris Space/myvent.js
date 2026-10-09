@@ -41,6 +41,13 @@ const createAndMove = async (member, guild) => {
           id: guild.roles.everyone,
           allow: [],
         },
+        {
+          id: systemConfig.hiddenRoleId,
+          deny: [
+            PermissionsBitField.Flags.ViewChannel,
+            PermissionsBitField.Flags.Connect,
+          ],
+        },
       ],
     });
 

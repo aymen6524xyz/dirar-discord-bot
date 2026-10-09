@@ -77,5 +77,39 @@ module.exports = {
             }
         }
         return lastUser;
+    },
+
+    /**
+     * Gets the most recent forwarded message ID.
+     */
+    getLastMessageId: () => {
+        const data = loadData();
+        let lastMessageId = null;
+        let maxTime = 0;
+
+        for (const [messageId, info] of Object.entries(data)) {
+            if (info.timestamp > maxTime) {
+                maxTime = info.timestamp;
+                lastMessageId = messageId;
+            }
+        }
+        return lastMessageId;
+    },
+
+    /**
+     * Gets the most recent forwarded message ID for a user.
+     */
+    getLatestMessageIdForUser: (userId) => {
+        const data = loadData();
+        let latestMessageId = null;
+        let maxTime = 0;
+
+        for (const [messageId, info] of Object.entries(data)) {
+            if (info.user === userId && info.timestamp > maxTime) {
+                maxTime = info.timestamp;
+                latestMessageId = messageId;
+            }
+        }
+        return latestMessageId;
     }
 };

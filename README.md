@@ -22,7 +22,8 @@ A structured and feature-rich Discord bot built with Discord.js v14.
 | `adminpm`    | Send a private message to a user as the bot.             |
 | `clear`      | Deletes a specified amount of messages from the channel. |
 | `clearbot`   | Deletes only the bot's messages from the channel.        |
-| `flock`      | Locks a voice channel (Restricts @everyone).             |
+| `connect`     | Connects the bot to a voice channel muted and deafened. |
+| `flock`       | Locks a voice channel (Restricts @everyone).             |
 | `funlock`    | Unlocks a voice channel.                                 |
 | `jv`         | Posts the server verification message.                   |
 | `log`        | Log a user ban with a reason.                            |
@@ -41,7 +42,7 @@ A structured and feature-rich Discord bot built with Discord.js v14.
 | `dmallow`         | Allow a specific user to chat via Bot DMs.                |
 | `dmrevoke`        | Revoke DM chat permission from a user.                    |
 | `dmsetchannel`    | Set the channel where received DMs are forwarded.         |
-| `reply`           | Reply to a forwarded DM (supports specific ID or "last"). |
+| `reply`           | Reply in the target channel to a forwarded DM (supports specific ID or "last"). |
 | `verificationtop` | View admin verification stats for the last 7 days.        |
 
 ### 🎮 Fun & Utilities (Everyone - Level 3)
@@ -61,6 +62,15 @@ A structured and feature-rich Discord bot built with Discord.js v14.
 | `uno`         | Play a game of UNO.                             |
 | `wordchain`   | Participate in the Word Chain game.             |
 
+### 🎵 Music (Everyone - Level 3)
+
+| Command | Description |
+| ------- | ----------- |
+| `play <URL or search>` | Join your voice channel and play or queue a YouTube track. |
+| `skip` | Skip the current track. |
+| `stop` | Stop playback, clear the queue, and disconnect. |
+| `queue` | Show the currently playing track and queued tracks. |
+
 ## Project Structure
 
 ```
@@ -72,6 +82,8 @@ dirar-discord-bot/
 │   │   ├── 8ball.js
 │   │   ├── ... (and high-level admin commands)
 │   │   └── wordchain.js
+│   ├── music/            # Guild music queues and voice playback
+│   │   └── musicManager.js
 │   ├── config/          # Configuration files
 │   │   ├── config.js
 │   │   ├── env.js
@@ -106,6 +118,11 @@ dirar-discord-bot/
 ```bash
 npm install
 ```
+
+Music playback uses `play-dl` for YouTube extraction and bundles FFmpeg through
+`ffmpeg-static`. The bot needs **Connect** and **Speak** permissions in the
+voice channel. YouTube playback may require a current
+`play-dl` installation when YouTube changes its streaming API.
 
 ### 2. Configure Environment Variables
 
@@ -158,3 +175,37 @@ Or for production:
 ```bash
 npm start
 ```
+
+## Privacy Policy Website
+
+The repository root also contains a dependency-free, GitHub Pages-ready privacy
+policy website for Colonel Hans:
+
+- `index.html` — policy page and table of contents.
+- `style.css` — responsive, accessible, dark-theme styling and print rules.
+- `script.js` — small progressive-enhancement script.
+- `404.html` — fallback page for GitHub Pages.
+
+The policy contains bracketed placeholders that **must be reviewed and replaced
+before publication**, including the operator identity, contact details, dates,
+support-server link, retention decisions, and confirmation of any optional
+external services. The policy is based on the source code reviewed in this
+repository and is not legal advice.
+
+### GitHub Pages deployment
+
+1. Create a **public** GitHub repository for the website.
+2. Upload `index.html`, `style.css`, `script.js`, `404.html`, and this
+   `README.md` to the repository root. Do not upload `.env`, bot tokens, API
+   keys, or database credentials.
+3. Open **Settings → Pages**.
+4. Under the build and deployment settings, select **Deploy from a branch**.
+5. Choose the `main` branch and the `/ (root)` directory.
+6. Select **Save**, then wait for GitHub Pages to publish the site.
+7. Open the published URL and verify every section, table-of-contents link,
+   contact link, 404 page, print layout, and mobile layout.
+8. Enter the published Privacy Policy URL in the Discord Developer Portal.
+
+Example URL format (replace the values; this is not a real URL):
+
+`https://OWNER.github.io/REPOSITORY/`
